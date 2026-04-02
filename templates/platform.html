@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ platform.name }} — Portability Score{% endblock %}
+{% block content %}
+<section>
+    <div class="container">
+        <div class="platform-header">
+            <div>
+                <h2>{{ platform.name }}</h2>
+                <p class="platform-meta">{{ platform.vendor }} · {{ platform.category }}
+                    {% if platform.website %}· <a href="{{ platform.website }}" target="_blank">Website ↗</a>{% endif %}
+                </p>
+            </div>
+            <div>
+                {% set s = platform.overall_score %}
+                <span class="score-badge {% if s >= 7 %}score-high{% elif s >= 5 %}score-mid{% else %}score-low{% endif %}" style="font-size:1.5rem;padding:8px 20px;">
+                    {{ s }} / 10
+                </span>
+                {% set g = grade(s) %}
+                <span class="grade grade-{{ g[0]|lower }}" style="font-size:2rem;margin-left:12px;">{{ g }}</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <p>{{ platform.description }}</p>
+            {% if platform.notes %}
+            <p style="margin-top:12px;color:var(--muted);font-style:italic;">{{ platform.notes }}</p>
+            {% endif %}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <div class="card">
+                <h3>Dimension Scores</h3>
+                {% for d in dimensions %}
+                {% set val = platform.score_dict.get(d.slug, 0) %}
+                <div class="dimension-bar">
+                    <span class="label">{{ d.name }}</span>
+                    <div class="bar-bg">
+                        <div class="bar-fill {% if val >= 7 %}bar-high{% elif val >= 5 %}bar-mid{% else %}bar-low{% endif %}"
+                             style="width:{{ val * 10 }}%"></div>
+                    </div>
+                    <span class="val">{{ val }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="card">
+                <h3>Radar Chart</h3>
+                <div class="chart-container">
+                    <canvas id="radar"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {% if platform.scores %}
+        <div class="card" style="margin-top:24px;">
+            <h3>Score Details</h3>
+            <table>
+                <thead><tr><th>Dimension</th><th>Score</th><th>Weight</th><th>Notes</th></tr></thead>
+                <tbody>
+                {% for s in platform.scores %}
+                <tr>
+                    <td>{{ s.dimension.name }}</td>
+                    <td><strong>{{ s.value }}</strong>/10</td>
+                    <td>{{ (s.dimension.weight * 100)|int }}%</td>
+                    <td style="color:var(--muted);">{{ s.notes or '—' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if platform.reports %}
+        <div class="card" style="margin-top:24px;">
+            <h3>Community Reports</h3>
+            {% for r in platform.reports %}
+            <div class="report">
+                <p>{{ r.experience }}</p>
+                <p class="meta">{{ r.author_name }} {% if r.author_role %}({{ r.author_role }}){% endif %} · Rating: {{ r.rating }}/5 · {{ r.submitted_at.strftime('%Y-%m-%d') if r.submitted_at else '' }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <p style="margin-top:24px;">
+            <a href="/submit" class="btn">Submit Your Experience</a>
+            <a href="/" class="btn" style="background:var(--muted);">← Back to Rankings</a>
+        </p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('radar').getContext('2d');
+new Chart(ctx, {
+    type: 'radar',
+    data: {
+        labels: {{ dimensions|map(attribute='name')|list|tojson }},
+        datasets: [{
+            label: '{{ platform.name }}',
+            data: [{% for d in dimensions %}{{ platform.score_dict.get(d.slug, 0) }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: 'rgba(37, 99, 235, 0.2)',
+            borderColor: 'rgba(37, 99, 235, 1)',
+            pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } },
+        plugins: { legend: { display: false } },
+    }
+});
+</script>
+{% endblock %}

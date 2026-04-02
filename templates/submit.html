@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Submit Your Experience{% endblock %}
+{% block content %}
+<section>
+    <div class="container">
+        <h3>Submit Your Experience</h3>
+        <p style="color:var(--muted);margin-bottom:24px;">Help the community by sharing your real-world experience with data portability on manufacturing platforms.</p>
+
+        <div class="card">
+            <form method="post" action="/submit">
+                <label for="platform_id">Platform</label>
+                <select name="platform_id" id="platform_id" required>
+                    <option value="">Select a platform…</option>
+                    {% for p in platforms %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="author_name">Your Name (optional)</label>
+                <input type="text" name="author_name" id="author_name" placeholder="Anonymous">
+
+                <label for="author_role">Your Role (optional)</label>
+                <input type="text" name="author_role" id="author_role" placeholder="e.g., MES Engineer, Plant Manager">
+
+                <label for="experience">Your Experience with Data Portability</label>
+                <textarea name="experience" id="experience" required placeholder="Describe your experience trying to export, migrate, or integrate data from this platform…"></textarea>
+
+                <label for="rating">Overall Portability Rating</label>
+                <select name="rating" id="rating">
+                    <option value="1">1 — Terrible (data is trapped)</option>
+                    <option value="2">2 — Poor</option>
+                    <option value="3" selected>3 — Average</option>
+                    <option value="4">4 — Good</option>
+                    <option value="5">5 — Excellent (fully portable)</option>
+                </select>
+
+                <button type="submit">Submit Report</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

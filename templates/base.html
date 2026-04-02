@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Manufacturing Data Portability Score{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📊 Mfg Portability Score</h1>
+            <p>Independent data portability ratings for manufacturing software</p>
+            <nav>
+                <a href="/">Rankings</a>
+                <a href="/compare">Compare</a>
+                <a href="/submit">Submit Report</a>
+            </nav>
+        </div>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>
+        <div class="container">
+            <p>Manufacturing Data Portability Score — Because your production data belongs to you.</p>
+        </div>
+    </footer>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

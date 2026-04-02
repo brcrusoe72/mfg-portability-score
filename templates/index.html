@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h2>NerdWallet for Manufacturing Software</h2>
+        <p>Independent, transparent portability ratings so you never get locked into a platform that holds your data hostage.</p>
+    </div>
+</div>
+
+<section>
+    <div class="container">
+        <h3>Platform Rankings</h3>
+        <div class="table-wrap">
+            <table id="rankings">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Rank</th>
+                        <th onclick="sortTable(1)">Platform</th>
+                        <th onclick="sortTable(2)">Category</th>
+                        <th onclick="sortTable(3)">Overall Score</th>
+                        <th onclick="sortTable(4)">Grade</th>
+                        {% for d in dimensions %}
+                        <th onclick="sortTable({{ 5 + loop.index0 }})" title="{{ d.description }}">{{ d.name[:12] }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in platforms %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><a href="/platform/{{ p.slug }}">{{ p.name }}</a></td>
+                        <td>{{ p.category }}</td>
+                        <td>
+                            {% set s = p.overall_score %}
+                            <span class="score-badge {% if s >= 7 %}score-high{% elif s >= 5 %}score-mid{% else %}score-low{% endif %}">
+                                {{ s }}
+                            </span>
+                        </td>
+                        <td>
+                            {% set g = grade(p.overall_score) %}
+                            <span class="grade grade-{{ g[0]|lower }}">{{ g }}</span>
+                        </td>
+                        {% for d in dimensions %}
+                        <td>{{ p.score_dict.get(d.slug, '—') }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sortTable(col) {
+    const table = document.getElementById('rankings');
+    const rows = Array.from(table.tBodies[0].rows);
+    const asc = table.dataset.sortCol == col && table.dataset.sortDir !== 'asc';
+    rows.sort((a, b) => {
+        let av = a.cells[col].textContent.trim();
+        let bv = b.cells[col].textContent.trim();
+        let an = parseFloat(av), bn = parseFloat(bv);
+        if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
+        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(r => table.tBodies[0].appendChild(r));
+    table.dataset.sortCol = col;
+    table.dataset.sortDir = asc ? 'asc' : 'desc';
+}
+</script>
+{% endblock %}
