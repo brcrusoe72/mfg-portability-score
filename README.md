@@ -1,19 +1,30 @@
 # Manufacturing Data Portability Score
 
-**NerdWallet for manufacturing software** — independent, transparent portability ratings for every MES, MOM, and industrial data platform.
+## Status — research prototype, reviewed 2026-10-13
+
+The seeded vendor scores are unverified editorial inputs, not results of completed
+platform export tests. They cover the included sample platforms, not every MES/MOM.
+Do not use the scores as procurement evidence until each value has dated sources
+and a repeatable test. The unchecked launch list below records unfinished work.
+
+Use a local-only development server: `flask --app app run --host 127.0.0.1 --port 5050`.
+`python app.py` currently enables debug mode on all interfaces. The SQLite database
+persists scores and submitted reports; submissions are not authenticated.
+
+A prototype comparison interface and scoring rubric for manufacturing-data portability.
 
 ## Why This Exists
 
 Manufacturing companies get locked into software platforms that hold their production data hostage. Switching costs are astronomical — not because the new system is hard, but because getting your data *out* of the old one is nearly impossible.
 
-We score every platform on 10 dimensions of data portability so you can make informed decisions before you're trapped.
+The prototype scores a seeded sample on 10 dimensions; the inputs require verification.
 
 ## Quick Start
 
 ```bash
 pip install -r requirements.txt
 python seed_data.py    # Initialize database with platform data
-python app.py          # Start server on http://localhost:5050
+flask --app app run --host 127.0.0.1 --port 5050
 ```
 
 ## Scoring Dimensions
@@ -66,3 +77,5 @@ python app.py          # Start server on http://localhost:5050
 ## License
 
 TBD
+
+The audit reproduced and repaired a platform-detail HTTP 500 caused by a Flask-SQLAlchemy helper used with plain SQLAlchemy. Two regression tests cover existing and missing platform slugs. Run `python -m pytest test_routes.py -q` after installing pytest.

@@ -1,7 +1,7 @@
 """Manufacturing Data Portability Score — Flask Web App."""
 
 import json
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, abort
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
 from portability_score.models import Base, Platform, Dimension, Score, UserReport
@@ -38,7 +38,10 @@ def platform_detail(slug):
     platform = session.query(Platform).options(
         joinedload(Platform.scores).joinedload(Score.dimension),
         joinedload(Platform.reports),
-    ).filter_by(slug=slug).first_or_404()
+    ).filter_by(slug=slug).first()
+    if platform is None:
+        session.close()
+        abort(404)
     dimensions = DIMENSIONS
     session.close()
     return render_template("platform.html", platform=platform, dimensions=dimensions, grade=grade)
