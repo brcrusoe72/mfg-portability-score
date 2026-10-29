@@ -66,7 +66,7 @@ def test_valid_report_is_persisted(client, session_factory):
         assert report.rating == 4
 
 
-@pytest.mark.parametrize("rating", [0, 6, True, "bad"])
+@pytest.mark.parametrize("rating", [0, 6, True, "bad", 1.0, 3.5])
 def test_invalid_rating_is_rejected(client, rating):
     response = client.post(
         "/api/reports",
@@ -77,6 +77,21 @@ def test_invalid_rating_is_rejected(client, rating):
         },
     )
     assert response.status_code == 400
+
+
+@pytest.mark.parametrize("platform_id", [1.0, 1.5, "1.0"])
+def test_non_integer_platform_id_is_rejected(client, session_factory, platform_id):
+    response = client.post(
+        "/api/reports",
+        json={
+            "platform_id": platform_id,
+            "experience": "Invalid platform identifier.",
+            "rating": 3,
+        },
+    )
+    assert response.status_code == 400
+    with session_factory() as session:
+        assert session.scalar(select(UserReport)) is None
 
 
 def test_unknown_platform_cannot_create_orphan_report(client, session_factory):
