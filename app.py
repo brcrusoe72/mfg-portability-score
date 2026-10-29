@@ -26,10 +26,13 @@ def _integer_field(data, name, default=None):
     value = data.get(name, default)
     if isinstance(value, bool):
         raise ValueError(f"{name} must be an integer")
-    try:
-        return int(value)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"{name} must be an integer") from exc
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        value = value.strip()
+        if value and value not in {"+", "-"} and value.lstrip("+-").isdigit():
+            return int(value)
+    raise ValueError(f"{name} must be an integer")
 
 
 def _text_field(data, name, max_length, *, required=False, default=""):
