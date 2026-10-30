@@ -45,6 +45,10 @@ python app.py          # Start server on http://localhost:5050
 - `GET /api/compare?ids=1,2,3` — side-by-side comparison
 - `POST /api/reports` — submit a user experience report
 
+Report submissions validate platform existence, require non-empty experience
+text, and accept ratings from 1 through 5. Authentication, rate limiting, and
+abuse prevention remain required before a public launch.
+
 ## Launch Checklist
 
 - [ ] Verify all seed data scores with at least 2 independent sources
