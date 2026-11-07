@@ -27,9 +27,9 @@ jobs:
       - run: python -m pip_audit -r requirements.txt
       - name: Reject tracked Python build artifacts
         run: |
-          tracked_artifacts="$(git ls-files | grep -E '(^|/)(__pycache__/|.*\\.py[co]$)' || true)"
+          tracked_artifacts="$(git ls-files | grep -E '(^|/)(__pycache__/|.*\.py[co]$)' || true)"
           if [ -n "$tracked_artifacts" ]; then
-            printf 'Tracked Python build artifacts:\\n%s\\n' "$tracked_artifacts"
+            printf 'Tracked Python build artifacts:\n%s\n' "$tracked_artifacts"
             exit 1
           fi
       - run: python -m compileall -q app.py portability_score
